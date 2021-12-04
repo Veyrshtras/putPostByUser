@@ -5,6 +5,7 @@ import com.example.putpostbyuser.entity.User;
 import com.example.putpostbyuser.repository.UserRepository;
 import com.example.putpostbyuser.service.UserService;
 import org.hibernate.service.spi.InjectService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -36,12 +37,13 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    BCryptPasswordEncoder encoder=new BCryptPasswordEncoder();
     @Override
     public UserItem add(UserItem user) {
         User user1=new User();
         user1.setEmail(user.getEmail());
         user1.setFullName(user.getFullName());
-        user1.setPassword(user.getPassword());
+        user1.setPassword(encoder.encode(user.getPassword()));
         user1.setRole(user.getRole());
         user1.setConfirmed(true);
         userRepository.save(user1);
@@ -51,7 +53,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserItem update(UserItem user, Long id) {
         User user1=userRepository.getById(id);
-        user1.setPassword(user.getPassword());
+        user1.setPassword(encoder.encode(user.getPassword()));
         user1.setFullName(user.getFullName());
         user1.setEmail(user.getEmail());
         user1.setRole(user.getRole());
